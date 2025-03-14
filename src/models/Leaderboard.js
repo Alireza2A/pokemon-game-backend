@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from './index.js';
 
-const Leaderboard = sequelize.define('Leaderboard', {
+const leaderboard = sequelize.define('leaderboard', {
   username: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -16,4 +16,4 @@ const Leaderboard = sequelize.define('Leaderboard', {
   },
 });
 
-export default Leaderboard;
+export default leaderboard;

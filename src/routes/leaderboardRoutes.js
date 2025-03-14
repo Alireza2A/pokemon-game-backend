@@ -1,10 +1,10 @@
 import express from 'express';
-import { getLeaderboard, addScore } from '../controllers/leaderboardController.js';
+import { getleaderboard, addScore } from '../controllers/leaderboardController.js';
 
 const router = express.Router();
 
 // GET all scores
-router.get('/', getLeaderboard);
+router.get('/', getleaderboard);
 
 // POST new score
 router.post('/', addScore);

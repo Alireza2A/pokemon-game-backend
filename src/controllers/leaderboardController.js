@@ -1,9 +1,9 @@
-import Leaderboard from '../models/Leaderboard.js';
+import leaderboard from '../models/leaderboard';
 
-// GET Leaderboard
-export const getLeaderboard = async (req, res) => {
+// GET leaderboard
+export const getleaderboard = async (req, res) => {
   try {
-    const scores = await Leaderboard.findAll();
+    const scores = await leaderboard.findAll();
     res.json(scores);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,7 +15,7 @@ export const addScore = async (req, res) => {
   const { username, score } = req.body;
 
   try {
-    const newScore = await Leaderboard.create({ username, score });
+    const newScore = await leaderboard.create({ username, score });
     res.status(201).json(newScore);
   } catch (error) {
     res.status(500).json({ message: error.message });

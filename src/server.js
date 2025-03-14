@@ -1,27 +1,20 @@
-import express from 'express';
 import dotenv from 'dotenv';
-import pkg from 'pg';
+import { connectDB } from './models/index.js';  
+import { sequelize } from './models/index.js';
+import app from './app.js'; // App importieren
 
 dotenv.config();
 
-const { Client } = pkg;
+console.log('Database URL:', process.env.DATABASE_URL);
 
-const app = express();
 const PORT = process.env.PORT || 5001;
 
-const client = new Client({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false,
-  },
-});
+// Connect to database
+connectDB();
 
-client.connect()
-  .then(() => console.log('Connected to the database'))
-  .catch((err) => console.error('Database connection error:', err));
-
-app.get('/', (req, res) => {
-  res.send('Hello, Express with ES6!');
+// Synchronise model with DB
+sequelize.sync().then(() => {
+  console.log('Database synchronized!');
 });
 
 app.listen(PORT, () => {

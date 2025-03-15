@@ -1,4 +1,5 @@
-import leaderboard from '../models/leaderboard';
+import leaderboard from '../models/leaderboard.js'; 
+
 
 // GET leaderboard
 export const getleaderboard = async (req, res) => {

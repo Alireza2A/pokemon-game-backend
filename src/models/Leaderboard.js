@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from './index.js';
 
-const leaderboard = sequelize.define('leaderboard', {
+const Leaderboard = sequelize.define('leaderboard', {
   username: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -14,6 +14,10 @@ const leaderboard = sequelize.define('leaderboard', {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
+}, {
+  freezeTableName: true,  // Prevents sequelize to change table name to leaderboards
 });
 
-export default leaderboard;
+console.log("Table name in Sequelize model:", Leaderboard.getTableName());
+
+export default Leaderboard;

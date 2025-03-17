@@ -1,29 +1,70 @@
 import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
-// Test with hardcoded DATABASE_URL
-const sequelize = new Sequelize('postgresql://PokemonBattleGame_owner:npg_L2eljRF7YsMg@ep-damp-forest-a2e5li68-pooler.eu-central-1.aws.neon.tech/PokemonBattleGame?sslmode=require', {
+// Load environment variables
+dotenv.config();
+
+if (!process.env.DATABASE_URL) {
+  throw new Error('DATABASE_URL is not defined in environment variables');
+}
+
+export const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
-  ssl: {
-    rejectUnauthorized: false,
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
   },
+  logging: false // Set to console.log to see SQL queries
 });
 
-// Connect to Neon database (usual way, did not work properly, put the hardcoded db url instead)
-// const sequelize = new Sequelize(process.env.DATABASE_URL, {
-// dialect: 'postgres',
-// ssl: {
-// rejectUnauthorized: false,
-// },
-// });
+// Import models
+import User from './User.js';
+import Pokemon from './Pokemon.js';
+import Battle from './Battle.js';
+import Leaderboard from './Leaderboard.js';
 
+// Define relationships
+User.hasMany(Pokemon, {
+  foreignKey: 'userId',
+  as: 'pokemon'
+});
+Pokemon.belongsTo(User, {
+  foreignKey: 'userId'
+});
 
-const connectDB = async () => {
+User.hasMany(Battle, {
+  foreignKey: 'userId',
+  as: 'battles'
+});
+Battle.belongsTo(User, {
+  foreignKey: 'userId'
+});
+
+Battle.belongsTo(Pokemon, {
+  foreignKey: 'playerPokemonId',
+  as: 'playerPokemon'
+});
+Battle.belongsTo(Pokemon, {
+  foreignKey: 'wildPokemonId',
+  as: 'wildPokemon'
+});
+
+// Export models
+export { User, Pokemon, Battle, Leaderboard };
+
+// Initialize database
+export async function initDatabase() {
   try {
     await sequelize.authenticate();
-    console.log('Database connected!');
+    console.log('Database connection established successfully.');
+    
+    // Sync all models
+    await sequelize.sync({ alter: true });
+    console.log('Database models synchronized successfully.');
   } catch (error) {
-    console.error('Database connection failed:', error);
+    console.error('Unable to connect to the database:', error);
+    throw error;
   }
-};
-
-export { sequelize, connectDB };
+}

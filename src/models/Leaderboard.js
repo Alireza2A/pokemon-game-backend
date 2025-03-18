@@ -1,5 +1,5 @@
-import { DataTypes } from 'sequelize';
 import { sequelize } from './index.js';
+import { DataTypes } from 'sequelize';
 
 const Leaderboard = sequelize.define('leaderboard', {
   username: {
@@ -9,6 +9,8 @@ const Leaderboard = sequelize.define('leaderboard', {
   score: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    validate: {
+      min: 0,
   },
   date: {
     type: DataTypes.DATE,

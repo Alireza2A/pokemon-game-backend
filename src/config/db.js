@@ -1,18 +1,19 @@
-import { Client } from 'pg';
+// import { Client } from 'pg'; 
 import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
 
 dotenv.config();
 
-const client = new Client({
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  logging: false // Optional: Set to console.log to see SQL queries
 });
 
-client.connect()
-  .then(() => console.log('Connected to the database'))
-  .catch((err) => console.error('Error connecting to the database', err));
+export default sequelize;
 
-export default client;

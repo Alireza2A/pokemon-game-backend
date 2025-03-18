@@ -19,14 +19,16 @@ const allowedOrigins = [
 // CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin) || !origin) {
+    // If origin is null
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      callback(new Error('Not allowed by CORS'), false);
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200, 
 };
 
 // Activate CORS middleware
@@ -46,6 +48,11 @@ initDatabase().then(() => {
 
 // Simple error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!' });
+  if (err.message === 'Not allowed by CORS') {
+    res.status(403).json({ message: 'CORS policy: Access denied' });
+  } else {
+    console.error(err.stack);
+    res.status(500).json({ message: 'Something went wrong!' });
+  }
 });
+

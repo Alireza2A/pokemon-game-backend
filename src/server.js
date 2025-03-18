@@ -1,4 +1,4 @@
-import { connectDB } from './models/index.js';  
+// import { connectDB } from './models/index.js';  // Commented out, since connectDB is not exported at the moment
 import { sequelize } from './models/index.js';
 import app from './app.js'; 
 import dotenv from 'dotenv';
@@ -37,19 +37,20 @@ app.use(cors(corsOptions));  // Use the configured CORS options
 app.use(helmet());           // Apply Helmet for enhanced security
 
 // Connect to the database
-connectDB().then(() => {
-  sequelize.sync().then(() => {
-    console.log('Database synchronized!');
-
-    app.listen(PORT, () => {
-      console.log(`Server running on http://localhost:${PORT}`);
+// connectDB().then(() => {
+  initDatabase().then(() => {
+    sequelize.sync().then(() => {
+      console.log('Database synchronized!');
+  
+      app.listen(PORT, () => {
+        console.log(`Server running on http://localhost:${PORT}`);
+      });
+    }).catch((error) => {
+      console.error('Error syncing database:', error);
     });
   }).catch((error) => {
-    console.error('Error syncing database:', error);
+    console.error('Error connecting to the database:', error);
   });
-}).catch((error) => {
-  console.error('Error connecting to the database:', error);
-});
 
 // Simple error handling middleware
 app.use((err, req, res, next) => {

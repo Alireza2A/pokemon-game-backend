@@ -1,14 +1,19 @@
-import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
 
-// Load environment variables
+// Import models (non existing models temporarily commented out)
+import { default as Leaderboard } from './Leaderboard.js';
+// import User from './models/User.js'; // to be created
+// import Pokemon from './models/Pokemon.js'; // to be created
+// import Battle from './models/Battle.js'; // to be created
+
 dotenv.config();
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
 
-export const sequelize = new Sequelize(process.env.DATABASE_URL, {
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: 'postgres',
   dialectOptions: {
     ssl: {
@@ -18,12 +23,6 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL, {
   },
   logging: false // Set to console.log to see SQL queries
 });
-
-// Import models (temporarily commented out)
-// import User from './User.js'; // to be created
-// import Pokemon from './Pokemon.js'; // to be created
-// import Battle from './Battle.js'; // to be created
-import Leaderboard from './Leaderboard.js';
 
 // Define relationships (commented out since the models are not available yet)
 // User.hasMany(Pokemon, {
@@ -51,9 +50,8 @@ import Leaderboard from './Leaderboard.js';
 //   as: 'wildPokemon'
 // });
 
-// Export models (commented out since the models are not available yet)
-// export { User, Pokemon, Battle, Leaderboard };
-
+// Export models
+export { sequelize, Leaderboard };
 
 // Initialize database
 export async function initDatabase() {

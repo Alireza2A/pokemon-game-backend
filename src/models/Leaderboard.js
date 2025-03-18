@@ -1,4 +1,4 @@
-import { sequelize } from './index.js';
+import { sequelize } from './index.js'; 
 import { DataTypes } from 'sequelize';
 
 const Leaderboard = sequelize.define('leaderboard', {
@@ -18,7 +18,7 @@ const Leaderboard = sequelize.define('leaderboard', {
     defaultValue: DataTypes.NOW,
   },
 }, {
-  freezeTableName: true,  // Prevents sequelize to change table name to leaderboards
+  freezeTableName: true,
 });
 
 console.log("Table name in Sequelize model:", Leaderboard.getTableName());

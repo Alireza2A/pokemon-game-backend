@@ -20,7 +20,7 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL, {
 });
 
 // Import models
-import User from './User.js';
+// import User from './User.js'; // to be created
 import Pokemon from './Pokemon.js';
 import Battle from './Battle.js';
 import Leaderboard from './Leaderboard.js';

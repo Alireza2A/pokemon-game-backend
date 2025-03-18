@@ -1,5 +1,16 @@
-import { sequelize } from './index.js'; 
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
+
+// Verbinde direkt mit der Datenbank
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  logging: false
+});
 
 const Leaderboard = sequelize.define('leaderboard', {
   username: {

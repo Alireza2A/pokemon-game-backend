@@ -1,11 +1,10 @@
+import dotenv from 'dotenv';
+dotenv.config();
 // import { connectDB } from './models/index.js';  // Commented out, since connectDB is not exported at the moment
 import { sequelize } from './models/index.js';
 import app from './app.js'; 
-import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
-
-dotenv.config();
 
 console.log('Database URL:', process.env.DATABASE_URL);
 

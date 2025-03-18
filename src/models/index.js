@@ -19,40 +19,41 @@ export const sequelize = new Sequelize(process.env.DATABASE_URL, {
   logging: false // Set to console.log to see SQL queries
 });
 
-// Import models
+// Import models (temporarily commented out)
 // import User from './User.js'; // to be created
-import Pokemon from './Pokemon.js';
-import Battle from './Battle.js';
+// import Pokemon from './Pokemon.js'; // to be created
+// import Battle from './Battle.js'; // to be created
 import Leaderboard from './Leaderboard.js';
 
-// Define relationships
-User.hasMany(Pokemon, {
-  foreignKey: 'userId',
-  as: 'pokemon'
-});
-Pokemon.belongsTo(User, {
-  foreignKey: 'userId'
-});
+// Define relationships (commented out since the models are not available yet)
+// User.hasMany(Pokemon, {
+//   foreignKey: 'userId',
+//   as: 'pokemon'
+// });
+// Pokemon.belongsTo(User, {
+//   foreignKey: 'userId'
+// });
 
-User.hasMany(Battle, {
-  foreignKey: 'userId',
-  as: 'battles'
-});
-Battle.belongsTo(User, {
-  foreignKey: 'userId'
-});
+// User.hasMany(Battle, {
+//   foreignKey: 'userId',
+//   as: 'battles'
+// });
+// Battle.belongsTo(User, {
+//   foreignKey: 'userId'
+// });
 
-Battle.belongsTo(Pokemon, {
-  foreignKey: 'playerPokemonId',
-  as: 'playerPokemon'
-});
-Battle.belongsTo(Pokemon, {
-  foreignKey: 'wildPokemonId',
-  as: 'wildPokemon'
-});
+// Battle.belongsTo(Pokemon, {
+//   foreignKey: 'playerPokemonId',
+//   as: 'playerPokemon'
+// });
+// Battle.belongsTo(Pokemon, {
+//   foreignKey: 'wildPokemonId',
+//   as: 'wildPokemon'
+// });
 
-// Export models
-export { User, Pokemon, Battle, Leaderboard };
+// Export models (commented out since the models are not available yet)
+// export { User, Pokemon, Battle, Leaderboard };
+
 
 // Initialize database
 export async function initDatabase() {

@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5001;
 // List of allowed origins (URLs)
 const allowedOrigins = [
   'http://localhost:3000',   // Local development server
-  'https://yourProductionDomain.com',  // Example for a production domain
+  'http://localhost:5173',   // Vite frontend server (local)
 ];
 
 // CORS configuration

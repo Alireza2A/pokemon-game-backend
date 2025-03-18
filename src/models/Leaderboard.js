@@ -11,6 +11,7 @@ const Leaderboard = sequelize.define('leaderboard', {
     allowNull: false,
     validate: {
       min: 0,
+    },
   },
   date: {
     type: DataTypes.DATE,

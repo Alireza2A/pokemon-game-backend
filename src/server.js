@@ -1,12 +1,10 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-console.log('DATABASE_URL from server.js:', process.env.DATABASE_URL);
-
-import { initDatabase } from './models/index.js';
-import app from './app.js'; 
-import cors from 'cors';
 import helmet from 'helmet';
+import cors from 'cors';
+import { initDatabase } from './models/index.js';
+import app from './app.js';
 
 const PORT = process.env.PORT || 5001;
 
@@ -19,12 +17,14 @@ const allowedOrigins = [
 // CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
+    console.log('Incoming request from origin:', origin); // Debugging
+
+    if (origin && allowedOrigins.includes(origin)) {
       callback(null, true);  // Allow the origin
     } else {
       const error = new Error('Not allowed by CORS');
-      error.status = 403;  // Set status to 403 if not allowed
-      callback(error, false);  // Pass error to next middleware
+      error.status = 403;  
+      callback(error, false);  
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -32,24 +32,40 @@ const corsOptions = {
   optionsSuccessStatus: 200, 
 };
 
-// Activate CORS middleware
-app.use(cors(corsOptions));  // Use the configured CORS options
+
+// Activate CORS middleware (should come before Helmet)
+app.use(cors(corsOptions));
 
 // Activate Helmet for enhanced security
-app.use(helmet());           // Apply Helmet for security headers
+app.use(helmet());
+
+// Define the Content Security Policy (CSP)
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"], // Allow same-origin resources
+      imgSrc: ["'self'", "http://localhost:5001"], // Allow favicon.ico
+      styleSrc: ["'self'", "'unsafe-inline'"], // Allow inline styles (for TailwindCSS, DaisyUI)
+      scriptSrc: ["'self'", "'unsafe-inline'"], // Allow inline scripts (if needed)
+      connectSrc: ["'self'"], // Allow API requests
+    },
+  })
+);
 
 // Connect to the database
-initDatabase().then(() => {
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+initDatabase()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`✅ Server running on http://localhost:${PORT}`);
+    });
+  })
+  .catch((error) => {
+    console.error('❌ Error connecting to the database:', error);
   });
-}).catch((error) => {
-  console.error('Error connecting to the database:', error);
-});
 
-// Simple error handling middleware
+// Simple error handling middleware (must be after all routes)
 app.use((err, req, res, next) => {
-  if (err.status === 403) {  // Check if the error is CORS-related
+  if (err.message === 'Not allowed by CORS') {
     res.status(403).json({ message: 'CORS policy: Access denied' });
   } else {
     console.error(err.stack);

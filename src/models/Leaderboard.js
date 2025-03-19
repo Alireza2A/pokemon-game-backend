@@ -1,37 +1,37 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import { DataTypes } from 'sequelize';
 
-// Verbinde direkt mit der Datenbank
-const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  },
-  logging: false
-});
+export default (sequelize) => {
+    const Leaderboard = sequelize.define(
+        'Leaderboard',
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                unique: true, // Each user has only one leaderboard entry
+            },
+            score: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+                validate: {
+                    min: 0,
+                },
+            },
+            //new col
+            date: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+        },
+        {
+            tableName: 'Leaderboard', // Explicitly set table name
+            timestamps: false, // Disable createdAt/updatedAt timestamps
+        }
+    );
 
-const Leaderboard = sequelize.define('leaderboard', {
-  username: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  score: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    validate: {
-      min: 0,
-    },
-  },
-  date: {
-    type: DataTypes.DATE,
-    defaultValue: DataTypes.NOW,
-  },
-}, {
-  freezeTableName: true,
-});
-
-console.log("Table name in Sequelize model:", Leaderboard.getTableName());
-
-export default Leaderboard;
+    return Leaderboard;
+};

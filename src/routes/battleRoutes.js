@@ -1,11 +1,9 @@
 import express from 'express';
-import { recordBattle, getUserBattles, getBattleStats } from '../controllers/battleController.js';
-import { validateBattleResult } from '../middleware/battleValidation.js';
+import { startBattle, getBattleResults } from '../controllers/battleController.js';
 
 const router = express.Router();
 
-router.post('/', validateBattleResult, recordBattle);
-router.get('/user/:userId', getUserBattles);
-router.get('/stats/:userId', getBattleStats);
+router.post('/start', startBattle);
+router.get('/results', getBattleResults);
 
-export default router; 
+export default router;

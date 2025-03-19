@@ -4,6 +4,8 @@ export default (sequelize) => {
     const UserPokemon = sequelize.define(
         'UserPokemon',
         {
+            //userid, pokemonid, attack, defense, ..
+
             id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,

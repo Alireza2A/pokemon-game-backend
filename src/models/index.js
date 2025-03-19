@@ -1,73 +1,40 @@
-import dotenv from 'dotenv';
-import { Sequelize } from 'sequelize';
-import sequelize from '../config/db.js'; // Sequelize client from config/db.js
+import { sequelize } from '../db/index.js';
+import UserModel from './user.js';
+import UserPokemonModel from './userPokemon.js';
+import AbilityModel from './ability.js';
+import UserPokemonAbilityModel from './userPokemonAbility.js';
+import BattleModel from './battle.js';
+import LeaderboardModel from './leaderboard.js';
 
-// Import models (non existing models temporarily commented out)
-import { default as Leaderboard } from './Leaderboard.js';
-// import User from './models/User.js'; // to be created
-// import Pokemon from './models/Pokemon.js'; // to be created
-// import Battle from './models/Battle.js'; // to be created
+// Initialize models
+const User = UserModel(sequelize);
+const UserPokemon = UserPokemonModel(sequelize);
+const Ability = AbilityModel(sequelize);
+const UserPokemonAbility = UserPokemonAbilityModel(sequelize);
+const Battle = BattleModel(sequelize);
+const Leaderboard = LeaderboardModel(sequelize);
 
-dotenv.config();
+// Define associations
+User.hasMany(UserPokemon, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+UserPokemon.belongsTo(User, { foreignKey: 'user_id' });
 
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not defined in environment variables');
-}
+UserPokemon.belongsToMany(Ability, { through: UserPokemonAbility, foreignKey: 'user_pokemon_id' });
+Ability.belongsToMany(UserPokemon, { through: UserPokemonAbility, foreignKey: 'ability_id' });
 
-console.log('Loaded DATABASE_URL:', process.env.DATABASE_URL);
+User.hasMany(Battle, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+Battle.belongsTo(User, { foreignKey: 'user_id' });
 
-// No new sequelize client needed, since that one is already in config/db.js
-// const sequelize = new Sequelize(process.env.DATABASE_URL, {
-//   dialect: 'postgres',
-//   dialectOptions: {
-//     ssl: {
-//       require: true,
-//       rejectUnauthorized: false
-//     }
-//   },
-//   logging: false // Set to console.log to see SQL queries
-// });
+User.hasOne(Leaderboard, { foreignKey: 'user_id', onDelete: 'CASCADE' });
+Leaderboard.belongsTo(User, { foreignKey: 'user_id' });
 
-// Define relationships (commented out since the models are not available yet)
-// User.hasMany(Pokemon, {
-//   foreignKey: 'userId',
-//   as: 'pokemon'
-// });
-// Pokemon.belongsTo(User, {
-//   foreignKey: 'userId'
-// });
+// Ensuring all models are loaded correctly
+const models = { User, UserPokemon, Ability, UserPokemonAbility, Battle, Leaderboard };
+Object.entries(models).forEach(([name, model]) => {
+    if (!model) {
+        console.warn(`Warning: Model ${name} was not loaded correctly.`);
+    } else {
+        console.log(`Model ${name} loaded successfully.`);
+    }
+});
 
-// User.hasMany(Battle, {
-//   foreignKey: 'userId',
-//   as: 'battles'
-// });
-// Battle.belongsTo(User, {
-//   foreignKey: 'userId'
-// });
-
-// Battle.belongsTo(Pokemon, {
-//   foreignKey: 'playerPokemonId',
-//   as: 'playerPokemon'
-// });
-// Battle.belongsTo(Pokemon, {
-//   foreignKey: 'wildPokemonId',
-//   as: 'wildPokemon'
-// });
-
-// Export models
-export { sequelize, Leaderboard };
-
-// Initialize database
-export async function initDatabase() {
-  try {
-    await sequelize.authenticate();
-    console.log('Database connection established successfully.');
-    
-    // Sync all models
-    await sequelize.sync({ alter: true });
-    console.log('Database models synchronized successfully.');
-  } catch (error) {
-    console.error('Unable to connect to the database:', error);
-    throw error;
-  }
-}
+export default models;

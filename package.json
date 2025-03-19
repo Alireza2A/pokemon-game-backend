@@ -21,11 +21,20 @@
     "homepage": "https://github.com/Alireza2A/pokemon-game-backend#readme",
     "description": "",
     "dependencies": {
+<<<<<<< HEAD
         "axios": "^1.8.3",
+=======
+        "bcrypt": "^5.1.1",
+        "bcryptjs": "^3.0.2",
+>>>>>>> 94065b860ca0059e485957564d7affe2fe2f557a
         "cors": "^2.8.5",
         "dotenv": "^16.4.7",
         "express": "^4.21.2",
         "helmet": "^8.0.0",
+        "joi": "^17.13.3",
+        "joy": "^0.1.1",
+        "jsonwebtoken": "^9.0.2",
+        "morgan": "^1.10.0",
         "pg": "^8.14.0",
         "sequelize": "^6.37.6"
     },

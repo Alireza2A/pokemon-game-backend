@@ -1,24 +1,43 @@
-import leaderboard from '../models/leaderboard.js'; 
+import models from '../models/index.js';
+const { Leaderboard } = models;
 
-
-// GET leaderboard
-export const getleaderboard = async (req, res) => {
-  try {
-    const scores = await leaderboard.findAll();
-    res.json(scores);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+export const getLeaderboard = async (req, res) => {
+    try {
+        const leaderboard = await Leaderboard.findAll({
+            order: [['score', 'DESC']],
+            limit: 10,
+        });
+        res.json(leaderboard);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 };
 
-// POST New Score
-export const addScore = async (req, res) => {
-  const { username, score } = req.body;
+export const updateScore = async (req, res) => {
+    try {
+        const { score } = req.body;
+        const user_id = req.user.id;
 
-  try {
-    const newScore = await leaderboard.create({ username, score });
-    res.status(201).json(newScore);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+        if (score === undefined || score === null) {
+            return res.status(400).json({ message: 'Score is required' });
+        }
+
+        // Find the leaderboard entry for the user
+        let leaderboardEntry = await Leaderboard.findOne({
+            where: { user_id },
+        });
+
+        if (!leaderboardEntry) {
+            // If the user does not have an entry, create a new one
+            leaderboardEntry = await Leaderboard.create({ user_id, score });
+        } else {
+            // If the user already has an entry, update their score
+            leaderboardEntry.score = score;
+            await leaderboardEntry.save();
+        }
+
+        res.json({ message: 'Leaderboard score updated', leaderboardEntry });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
 };

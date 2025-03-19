@@ -1,44 +1,61 @@
-import { Sequelize } from 'sequelize';
 import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
+import sequelize from '../config/db.js'; // Sequelize client from config/db.js
 
-// Load environment variables
+// Import models (non existing models temporarily commented out)
+import { default as Leaderboard } from './Leaderboard.js';
+// import User from './models/User.js'; // to be created
+// import Pokemon from './models/Pokemon.js'; // to be created
+// import Battle from './models/Battle.js'; // to be created
+
 dotenv.config();
 
 if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL is not defined in environment variables');
 }
 
-export const sequelize = new Sequelize(process.env.DATABASE_URL, {
-  dialect: 'postgres',
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false
-    }
-  },
-  logging: false // Set to console.log to see SQL queries
-});
+console.log('Loaded DATABASE_URL:', process.env.DATABASE_URL);
 
-// Import models
-import User from './User.js';
-import Pokemon from './Pokemon.js';
-import Battle from './Battle.js';
-import Leaderboard from './Leaderboard.js';
+// No new sequelize client needed, since that one is already in config/db.js
+// const sequelize = new Sequelize(process.env.DATABASE_URL, {
+//   dialect: 'postgres',
+//   dialectOptions: {
+//     ssl: {
+//       require: true,
+//       rejectUnauthorized: false
+//     }
+//   },
+//   logging: false // Set to console.log to see SQL queries
+// });
 
-// Define relationships
-User.hasMany(Pokemon);
-Pokemon.belongsTo(User);
+// Define relationships (commented out since the models are not available yet)
+// User.hasMany(Pokemon, {
+//   foreignKey: 'userId',
+//   as: 'pokemon'
+// });
+// Pokemon.belongsTo(User, {
+//   foreignKey: 'userId'
+// });
 
-User.hasMany(Battle);
-Battle.belongsTo(User, { as: 'user' });
+// User.hasMany(Battle, {
+//   foreignKey: 'userId',
+//   as: 'battles'
+// });
+// Battle.belongsTo(User, {
+//   foreignKey: 'userId'
+// });
 
-Pokemon.hasMany(Battle, { foreignKey: 'playerPokemonId', as: 'playerBattles' });
-Pokemon.hasMany(Battle, { foreignKey: 'wildPokemonId', as: 'wildBattles' });
-Battle.belongsTo(Pokemon, { foreignKey: 'playerPokemonId', as: 'playerPokemon' });
-Battle.belongsTo(Pokemon, { foreignKey: 'wildPokemonId', as: 'wildPokemon' });
+// Battle.belongsTo(Pokemon, {
+//   foreignKey: 'playerPokemonId',
+//   as: 'playerPokemon'
+// });
+// Battle.belongsTo(Pokemon, {
+//   foreignKey: 'wildPokemonId',
+//   as: 'wildPokemon'
+// });
 
 // Export models
-export { User, Pokemon, Battle, Leaderboard };
+export { sequelize, Leaderboard };
 
 // Initialize database
 export async function initDatabase() {

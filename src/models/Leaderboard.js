@@ -1,5 +1,16 @@
-import { DataTypes } from 'sequelize';
-import { sequelize } from './index.js';
+import { Sequelize, DataTypes } from 'sequelize';
+
+// Verbinde direkt mit der Datenbank
+const sequelize = new Sequelize(process.env.DATABASE_URL, {
+  dialect: 'postgres',
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false
+    }
+  },
+  logging: false
+});
 
 const Leaderboard = sequelize.define('leaderboard', {
   username: {
@@ -9,13 +20,16 @@ const Leaderboard = sequelize.define('leaderboard', {
   score: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    validate: {
+      min: 0,
+    },
   },
   date: {
     type: DataTypes.DATE,
     defaultValue: DataTypes.NOW,
   },
 }, {
-  freezeTableName: true,  // Prevents sequelize to change table name to leaderboards
+  freezeTableName: true,
 });
 
 console.log("Table name in Sequelize model:", Leaderboard.getTableName());

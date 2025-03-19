@@ -1,6 +1,6 @@
-import Pokemon from '../models/Pokemon.js';
-import Battle from '../models/Battle.js';
+import { User, UserPokemon, Pokemon, Battle } from '../models/index.js';
 import { Op } from 'sequelize';
+import { fetchPokemonData } from '../services/pokeApiService.js';
 
 // Helper function to calculate HP based on level
 const calculateHp = (level) => {
@@ -42,22 +42,23 @@ const generateMoves = () => {
 // Get a random wild Pokemon
 export const getWildPokemon = async (req, res) => {
   try {
-    // Get a random Pokemon from the database
-    const wildPokemon = await Pokemon.findOne({
-      order: sequelize.random(),
-      where: {
-        userId: null // Ensure it's not a user's Pokemon
-      }
-    });
+    const { id } = req.params;
+    const wildPokemon = await fetchPokemonData(id);
 
     if (!wildPokemon) {
-      return res.status(404).json({ message: "No wild Pokemon available" });
+      return res.status(404).json({ error: 'Wild Pokemon not found' });
     }
 
-    res.json(wildPokemon);
+    // Add current HP for battle
+    const pokemonWithHp = {
+      ...wildPokemon,
+      currentHp: wildPokemon.baseStats.hp
+    };
+
+    res.json(pokemonWithHp);
   } catch (error) {
-    console.error("Error getting wild Pokemon:", error);
-    res.status(500).json({ message: "Error getting wild Pokemon" });
+    console.error('Error fetching wild pokemon:', error);
+    res.status(500).json({ error: 'Failed to fetch wild pokemon' });
   }
 };
 
@@ -103,61 +104,71 @@ export const updatePokemonStats = async (req, res) => {
 };
 
 // Record battle result
-export const recordBattle = async (req, res) => {
+export const recordBattleResult = async (req, res) => {
   try {
-    const { userId, playerPokemonId, wildPokemonId, result, experienceGained, movesUsed, battleDuration, statusEffects } = req.body;
+    const { userId, pokemonId, opponentPokemonId, winner, loser } = req.body;
+    
+    // Calculate score change (example: +10 for win, -5 for loss)
+    const scoreChange = winner === 'user' ? '+10' : '-5';
+    
+    // Get current user score
+    const user = await User.findByPk(userId);
+    const currentScore = user.score;
+    
+    // Calculate new score
+    const newScore = winner === 'user' 
+      ? currentScore + 10 
+      : Math.max(0, currentScore - 5);
 
-    // Start a transaction to ensure data consistency
-    const battleResult = await sequelize.transaction(async (t) => {
-      // Create battle record
-      const battle = await Battle.create({
-        userId,
-        playerPokemonId,
-        wildPokemonId,
-        result,
-        experienceGained,
-        movesUsed,
-        battleDuration,
-        statusEffects
-      }, { transaction: t });
+    // Update user score
+    await user.update({ score: newScore });
 
-      // Update player's Pokemon experience if battle was won
-      if (result === 'won') {
-        const playerPokemon = await Pokemon.findByPk(playerPokemonId, { transaction: t });
-        if (playerPokemon) {
-          await playerPokemon.update({
-            experience: playerPokemon.experience + experienceGained
-          }, { transaction: t });
-        }
-      }
-
-      return battle;
+    // Record battle
+    const battle = await Battle.create({
+      userId,
+      pokemonId,
+      opponentPokemonId,
+      winner,
+      loser,
+      scoreChange,
+      newScore
     });
 
-    res.status(201).json(battleResult);
+    res.json({
+      message: 'Battle recorded successfully',
+      battle,
+      newScore
+    });
   } catch (error) {
-    console.error("Error recording battle:", error);
-    res.status(500).json({ message: "Error recording battle" });
+    console.error('Error recording battle:', error);
+    res.status(500).json({ error: 'Failed to record battle' });
   }
 };
 
 // Get battle history for a user
 export const getUserBattles = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const userId = req.params.userId;
     const battles = await Battle.findAll({
       where: { userId },
       include: [
-        { model: Pokemon, as: 'playerPokemon' },
-        { model: Pokemon, as: 'wildPokemon' }
+        {
+          model: UserPokemon,
+          attributes: ['id', 'name']
+        },
+        {
+          model: Pokemon,
+          as: 'opponentPokemon',
+          attributes: ['id', 'name']
+        }
       ],
       order: [['createdAt', 'DESC']]
     });
 
     res.json(battles);
   } catch (error) {
-    console.error("Error getting user battles:", error);
-    res.status(500).json({ message: "Error getting user battles" });
+    console.error('Error fetching user battles:', error);
+    res.status(500).json({ error: 'Failed to fetch user battles' });
   }
 };
 

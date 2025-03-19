@@ -30,10 +30,10 @@ const corsOptions = {
 };
 
 // Activate CORS middleware
-app.use(cors(corsOptions));  // Use the configured CORS options
+app.use(cors(corsOptions));
 
 // Activate Helmet for enhanced security
-app.use(helmet());           // Apply Helmet for security headers
+app.use(helmet());
 
 // Connect to the database
 initDatabase().then(() => {
@@ -42,6 +42,7 @@ initDatabase().then(() => {
   });
 }).catch((error) => {
   console.error('Error connecting to the database:', error);
+  process.exit(1);
 });
 
 // Simple error handling middleware

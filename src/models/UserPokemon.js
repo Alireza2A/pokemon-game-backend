@@ -1,7 +1,7 @@
 import { DataTypes } from 'sequelize';
 import sequelize from '../config/db.js';
 
-const Battle = sequelize.define('Battle', {
+const UserPokemon = sequelize.define('UserPokemon', {
   id: {
     type: DataTypes.INTEGER,
     primaryKey: true,
@@ -19,47 +19,37 @@ const Battle = sequelize.define('Battle', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'UserPokemons',
-      key: 'id'
-    }
-  },
-  opponentPokemonId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
       model: 'Pokemons',
       key: 'id'
     }
   },
-  winner: {
-    type: DataTypes.ENUM('user', 'opponent'),
-    allowNull: false
-  },
-  loser: {
-    type: DataTypes.ENUM('user', 'opponent'),
-    allowNull: false
-  },
-  scoreChange: {
+  name: {
     type: DataTypes.STRING,
     allowNull: false
   },
-  newScore: {
+  level: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 1
+  },
+  experience: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: 0
+  },
+  currentHp: {
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  battleDuration: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  movesUsed: {
+  abilities: {
     type: DataTypes.JSONB,
     allowNull: false,
     defaultValue: []
   },
-  statusEffects: {
-    type: DataTypes.JSONB,
+  status: {
+    type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: []
+    defaultValue: 'active'
   }
 }, {
   timestamps: true,
@@ -69,11 +59,8 @@ const Battle = sequelize.define('Battle', {
     },
     {
       fields: ['pokemonId']
-    },
-    {
-      fields: ['opponentPokemonId']
     }
   ]
 });
 
-export default Battle; 
+export default UserPokemon; 

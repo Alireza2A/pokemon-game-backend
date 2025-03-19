@@ -12,22 +12,23 @@ const PORT = process.env.PORT || 5001;
 const allowedOrigins = [
   'http://localhost:3000',   // Local development server
   'http://localhost:5173',   // Vite frontend server (local)
+  'http://localhost:5001',   // Backend server
 ];
 
 // CORS configuration
 const corsOptions = {
   origin: (origin, callback) => {
     console.log('Incoming request from origin:', origin); // Debugging
-
     if (origin && allowedOrigins.includes(origin)) {
       callback(null, true);  // Allow the origin
     } else {
+      console.log(`Blocked CORS request from: ${origin}`); // Log blocked request
       const error = new Error('Not allowed by CORS');
       error.status = 403;  
       callback(error, false);  
     }
   },
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'], // Allow OPTIONS for preflight requests
   allowedHeaders: ['Content-Type', 'Authorization'],
   optionsSuccessStatus: 200, 
 };
@@ -51,6 +52,9 @@ app.use(
     },
   })
 );
+
+// Handle OPTIONS preflight requests (for CORS)
+app.options('*', cors(corsOptions)); // This will handle the preflight requests for all routes
 
 // Connect to the database
 initDatabase()

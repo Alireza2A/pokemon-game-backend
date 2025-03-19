@@ -26,30 +26,16 @@ import Battle from './Battle.js';
 import Leaderboard from './Leaderboard.js';
 
 // Define relationships
-User.hasMany(Pokemon, {
-  foreignKey: 'userId',
-  as: 'pokemon'
-});
-Pokemon.belongsTo(User, {
-  foreignKey: 'userId'
-});
+User.hasMany(Pokemon);
+Pokemon.belongsTo(User);
 
-User.hasMany(Battle, {
-  foreignKey: 'userId',
-  as: 'battles'
-});
-Battle.belongsTo(User, {
-  foreignKey: 'userId'
-});
+User.hasMany(Battle);
+Battle.belongsTo(User, { as: 'user' });
 
-Battle.belongsTo(Pokemon, {
-  foreignKey: 'playerPokemonId',
-  as: 'playerPokemon'
-});
-Battle.belongsTo(Pokemon, {
-  foreignKey: 'wildPokemonId',
-  as: 'wildPokemon'
-});
+Pokemon.hasMany(Battle, { foreignKey: 'playerPokemonId', as: 'playerBattles' });
+Pokemon.hasMany(Battle, { foreignKey: 'wildPokemonId', as: 'wildBattles' });
+Battle.belongsTo(Pokemon, { foreignKey: 'playerPokemonId', as: 'playerPokemon' });
+Battle.belongsTo(Pokemon, { foreignKey: 'wildPokemonId', as: 'wildPokemon' });
 
 // Export models
 export { User, Pokemon, Battle, Leaderboard };

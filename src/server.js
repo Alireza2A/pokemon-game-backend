@@ -39,6 +39,23 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
+<<<<<<< HEAD
+// Activate CORS middleware
+app.use(cors(corsOptions));
+
+// Activate Helmet for enhanced security
+app.use(helmet());
+
+// Connect to the database
+initDatabase().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}).catch((error) => {
+  console.error('Error connecting to the database:', error);
+  process.exit(1);
+});
+=======
 // middleware
 app.use(logger);
 app.use(cors(corsOptions));
@@ -52,6 +69,7 @@ app.use('/api/userPokemon', authMiddleware, userPokemonRoutes);
 app.use('/api/abilities', authMiddleware, abilityRoutes);
 app.use('/api/battles', authMiddleware, battleRoutes);
 app.use('/api/leaderboard', authMiddleware, leaderboardRoutes);
+>>>>>>> 94065b860ca0059e485957564d7affe2fe2f557a
 
 app.use(errorHandler);
 

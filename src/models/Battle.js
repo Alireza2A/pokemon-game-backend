@@ -1,79 +1,49 @@
 import { DataTypes } from 'sequelize';
-import sequelize from '../config/db.js';
 
-const Battle = sequelize.define('Battle', {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Users',
-      key: 'id'
-    }
-  },
-  pokemonId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'UserPokemons',
-      key: 'id'
-    }
-  },
-  opponentPokemonId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: {
-      model: 'Pokemons',
-      key: 'id'
-    }
-  },
-  winner: {
-    type: DataTypes.ENUM('user', 'opponent'),
-    allowNull: false
-  },
-  loser: {
-    type: DataTypes.ENUM('user', 'opponent'),
-    allowNull: false
-  },
-  scoreChange: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  newScore: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  battleDuration: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  movesUsed: {
-    type: DataTypes.JSONB,
-    allowNull: false,
-    defaultValue: []
-  },
-  statusEffects: {
-    type: DataTypes.JSONB,
-    allowNull: false,
-    defaultValue: []
-  }
-}, {
-  timestamps: true,
-  indexes: [
-    {
-      fields: ['userId']
-    },
-    {
-      fields: ['pokemonId']
-    },
-    {
-      fields: ['opponentPokemonId']
-    }
-  ]
-});
+export default (sequelize) => {
+    const Battle = sequelize.define(
+        'Battle',
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                primaryKey: true,
+                autoIncrement: true,
+            },
+            user_id: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            pokemon_id: {
+                // The user's Pokémon ID (from the API)
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            opponent_pokemon_id: {
+                // Opponent's Pokémon ID (from the API)
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            result: {
+                type: DataTypes.STRING,
+                allowNull: false,
+                validate: {
+                    isIn: [['win', 'loss']],
+                },
+            },
+            points_awarded: {
+                type: DataTypes.INTEGER,
+                allowNull: false,
+            },
+            battle_date: {
+                type: DataTypes.DATE,
+                defaultValue: DataTypes.NOW,
+            },
+        },
+        {
+            tableName: 'Battles',
+            timestamps: false,
+        }
+    );
 
-export default Battle; 
+    return Battle;
+};

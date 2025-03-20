@@ -1,6 +1,30 @@
 import models from '../models/index.js';
+import { fetchRandomPokemon } from '../services/pokeApiService.js';
 
 const { Battle, Leaderboard, UserPokemon, UserPokemonAbility } = models;
+
+// Get a wild Pokémon of specified level
+export const getWildPokemon = async (req, res) => {
+    try {
+        const level = parseInt(req.params.level) || 5;
+        
+        // Validate level is between 1 and 100
+        if (level < 1 || level > 100) {
+            return res.status(400).json({ message: 'Level must be between 1 and 100' });
+        }
+        
+        // Fetch random Pokémon data
+        const wildPokemon = await fetchRandomPokemon(level);
+        
+        res.json(wildPokemon);
+    } catch (error) {
+        console.error('Error fetching wild Pokémon:', error);
+        res.status(500).json({ 
+            message: 'Failed to fetch wild Pokémon',
+            error: error.message 
+        });
+    }
+};
 
 export const startBattle = async (req, res) => {
     try {

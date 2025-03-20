@@ -50,7 +50,7 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/userPokemon', authMiddleware, userPokemonRoutes);
 app.use('/api/abilities', authMiddleware, abilityRoutes);
-app.use('/api/battles', authMiddleware, battleRoutes);
+app.use('/api/battle', battleRoutes);
 app.use('/api/leaderboard', authMiddleware, leaderboardRoutes);
 
 app.use(errorHandler);

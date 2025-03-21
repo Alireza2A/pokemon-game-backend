@@ -21,7 +21,19 @@ export default (sequelize) => {
             opponent_pokemon_id: {
                 // Opponent's Pokémon ID (from the API)
                 type: DataTypes.INTEGER,
-                allowNull: false,
+                allowNull: true, // Make nullable for wild Pokémon
+            },
+            opponent_is_wild: {
+                type: DataTypes.BOOLEAN,
+                defaultValue: false,
+            },
+            opponent_name: {
+                type: DataTypes.STRING,
+                allowNull: true,
+            },
+            opponent_level: {
+                type: DataTypes.INTEGER,
+                allowNull: true,
             },
             result: {
                 type: DataTypes.STRING,
@@ -37,6 +49,18 @@ export default (sequelize) => {
             battle_date: {
                 type: DataTypes.DATE,
                 defaultValue: DataTypes.NOW,
+            },
+            moves_used: {
+                type: DataTypes.JSON,
+                allowNull: true,
+            },
+            battle_duration: {
+                type: DataTypes.INTEGER, // in seconds
+                allowNull: true,
+            },
+            status_effects: {
+                type: DataTypes.JSON,
+                allowNull: true,
             },
         },
         {
